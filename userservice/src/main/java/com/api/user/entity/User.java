@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.lang.NonNull;
 
 	@Entity
@@ -30,6 +31,7 @@ import org.springframework.lang.NonNull;
 		@NotNull(message="Can not be null")
 		private String name;
 		
+		//@UniqueElements
 		@Email(regexp =  "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.(?:[A-Z]{2,}|com|org))+$",message="Not valid")
 		private String email;
 		

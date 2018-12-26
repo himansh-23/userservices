@@ -1,15 +1,16 @@
 package com.api.user.services;
 
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.api.user.entity.LoginUser;
 import com.api.user.entity.User;
 import com.api.user.repository.UserRepository;
+import com.api.user.utils.UserToken;
 
 @Service
 public class UserServicesImpl implements UserServices {
@@ -22,11 +23,30 @@ public class UserServicesImpl implements UserServices {
 	public User register(User user) {
 		
 		user.setPassword(passwordencoder.encode(user.getPassword()));
-		if(userrepositoty.findByEmail(user.getEmail())!=null)
+		Optional<User> useravailable=userrepositoty.findByEmail(user.getEmail());
+		if(useravailable.isPresent())
 		{
-			return new User();
+			return null;
 		}
+		
 		return userrepositoty.save(user);
+	}
+	
+	public String login(LoginUser loginuser)
+	{
+		Optional<User> useravailable=userrepositoty.findByEmail(loginuser.getEmail());	
+		if(!useravailable.isPresent())
+		{
+			return null;
+		}
+		boolean passwordmatch=passwordencoder.matches(loginuser.getPassword(),useravailable.get().getPassword());
+		if(passwordmatch)
+		{
+			return UserToken.generateToken(useravailable.get().getId());
+		}
+		
+		return null;
+		
 	}
 	
 	

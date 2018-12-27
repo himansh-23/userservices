@@ -8,7 +8,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 
 public class UserToken {
 	
-	static String TOKEN_SECRET="gh2we43jue";
+	public static String TOKEN_SECRET="gh2we43jue";
 	public static String generateToken(long id)
 	{
 		try {
@@ -16,6 +16,7 @@ public class UserToken {
 			String token=JWT.create()
 							.withClaim("ID", id)
 							.sign(algorithm);
+			
 			return token;		
 		}
 		catch(UnsupportedEncodingException exception)

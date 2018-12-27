@@ -4,6 +4,7 @@ package com.api.user.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,15 @@ public class UserServicesImpl implements UserServices {
 	private UserRepository userrepositoty;
 	@Autowired
 	private PasswordEncoder passwordencoder;
+	
+	@Value("${mail.properties.subject}")
+	private String subject;
+	@Value("${mail.properties.body}")
+	private String body;
+	
+	@Autowired
+	private MailServices mailservices;
+	
 	@Override
 	public User register(User user) {
 		
@@ -28,25 +38,25 @@ public class UserServicesImpl implements UserServices {
 		{
 			return null;
 		}
-		
+		mailservices.mailSend(user.getEmail(),subject,body);
 		return userrepositoty.save(user);
 	}
 	
-	public String login(LoginUser loginuser)
+	public String login(LoginUser loginuser) throws Exception
 	{
-		Optional<User> useravailable=userrepositoty.findByEmail(loginuser.getEmail());	
-		if(!useravailable.isPresent())
-		{
-			return null;
-		}
-		boolean passwordmatch=passwordencoder.matches(loginuser.getPassword(),useravailable.get().getPassword());
-		if(passwordmatch)
-		{
-			return UserToken.generateToken(useravailable.get().getId());
-		}
+		return userrepositoty.findByEmail(loginuser.getEmail())
+							 .map(fromDBUser-> this.validUser(fromDBUser, loginuser.getPassword()))
+							 .orElseThrow(()-> new Exception("Not valid User"));
+	}
+	
+	private String validUser(User fromDBUser, String password){
+		boolean isValid =passwordencoder.matches(password, fromDBUser.getPassword());
 		
-		return null;
-		
+		String  token = null;
+		if(isValid) { 
+			token=UserToken.generateToken(fromDBUser.getId());
+		}
+		return  token;
 	}
 	
 	

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.api.user.entity.User;
 import com.api.user.repository.UserRepository;
+import com.api.user.utils.UserToken;
 
 @Service
 public class PasswordServicesImpl implements PasswordServices {
@@ -14,7 +15,7 @@ public class PasswordServicesImpl implements PasswordServices {
 	private UserRepository userrepositoty;
 	
 	@Override
-	public User forgotPassword(String email) 
+	public User forgotPassword(String email) throws Exception
 	{
 		Optional<User> useravailable=userrepositoty.findByEmail(email);
 		
@@ -22,7 +23,18 @@ public class PasswordServicesImpl implements PasswordServices {
 		{
 			return useravailable.get();
 		}
-		return null;
+		else
+		{
+			throw new Exception("Email Address not Found");
+		}
 	}
+	
+	public User passwordReset(String token) throws Exception
+	{
+		long userid=UserToken.tokenVerify(token);
+		return userrepositoty.findById(userid).get();
+		//String registertoken=UserToken.generateToken(userid);
+	}
+	
 	
 }

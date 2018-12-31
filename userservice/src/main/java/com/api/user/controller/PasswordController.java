@@ -1,5 +1,7 @@
 package com.api.user.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,64 +35,54 @@ public class PasswordController {
 	private PasswordEncoder passwordencoder;
 	
 	@GetMapping("/forgotpassword")
-	public ResponseEntity<?> forgotPassword(@RequestParam String email)
+	public ResponseEntity<?> forgotPassword(@RequestParam String email,HttpServletRequest request) throws Exception
 	{
-		Response response;
-		User user=passwordservices.forgotPassword(email);
-		
-		if(user!=null)
-		{
+			Response response;
+			User user=passwordservices.forgotPassword(email);
 			response=new Response();
 			response.setStatusCode(356);
 			response.setStatusMessage("Reset-Mail Send To Your Eamil Address");
 			String registertoken=UserToken.generateToken(user.getId());
-			EmailUtil.sendEmail("prajapat.himanshu@gmail.com", "Password Reset", "Click On Below link To reset Your Password\n"+"http://localhost:8080/api/user/resetpassword/"+registertoken);
-			return new ResponseEntity<Response>(response, HttpStatus.OK);
-		}
-		response=new Response();
-		response.setStatusCode(367);
-		response.setStatusMessage("Their is No Such User,Invalid Email Address");
-		return new ResponseEntity<Response>(response,HttpStatus.NOT_FOUND);	
-	}
-	
-	@RequestMapping(value="/resetpassword/{token}")
-	public ResponseEntity<?> resetPassword(@PathVariable("token") String token)
-	{	
-			Response response=new Response();
-			long userid=UserToken.tokenVerify(token);
-			if(userid>0)
-			{
-			String registertoken=UserToken.generateToken(userid);
-			EmailUtil.sendEmail("prajapat.himanshu@gmail.com", "ChangePassword", "Click On Below link To Change Your Password\n"+"http://localhost:8080/api/user/resetpage/"+registertoken);	
-			response.setStatusCode(200);
-			response.setStatusMessage("Redirect To New Password Set Page");
-			}
-			else
-			{
-			response.setStatusCode(456);
-			response.setStatusMessage("Invalid Password Reset Link");
-		}
+			EmailUtil.sendEmail(email, "Password Reset", this.getBody(request, user,"resetpassword"));
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
-	
+	/**
+	 * Check The Password Reset Link
+	 * @param token
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/resetpassword/{token}") 
+	public ResponseEntity<?> resetPassword(@PathVariable("token") String token,HttpServletRequest request) throws Exception
+	{	
+			User user=passwordservices.passwordReset(token);
+			EmailUtil.sendEmail(user.getEmail(), "ChangePassword", this.getBody(request, user,"resetpage"));
+			Response response=new Response();
+			response.setStatusCode(200);
+			response.setStatusMessage("Redirect To New Password Set Page");	
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	/**
+	 * Redirect To Password Reset Page
+	 * @param token
+	 * @param loginuser
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/resetpage/{token}" ,method=RequestMethod.POST)
-	public ResponseEntity<?> resetPage(@PathVariable("token") String token,@RequestBody LoginUser loginuser)
+	public ResponseEntity<?> resetPage(@PathVariable("token") String token,@RequestBody LoginUser loginuser) throws Exception
 	{
-		long userid=UserToken.tokenVerify(token);
-		Response response=new Response();
-		if(userid>0)
-		{
+			long userid=UserToken.tokenVerify(token);
+			Response response=new Response();
 			User user=userrepositoty.findById(userid).get();
 			user.setPassword(passwordencoder.encode(loginuser.getPassword()));
 			userrepositoty.save(user);
 			response.setStatusCode(200);
 			response.setStatusMessage("Password Set Successfully");
-		}
-		else
-		{
-			response.setStatusCode(288);
-			response.setStatusMessage("Password Reset Link is Not Valid");
-		}
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
+	}
+	
+	private String getBody(HttpServletRequest req, User user,String link)throws Exception {
+		return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()+"/api/user/"+link+"/"+UserToken.generateToken(user.getId());
 	}
 }

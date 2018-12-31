@@ -12,6 +12,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class EmailUtil {
+	
 	public static void sendEmail(String toEmail, String subject, String body){
 		
 		Properties props = new Properties(); 
@@ -27,6 +28,7 @@ public class EmailUtil {
 			return new PasswordAuthentication("dummy12hi@gmail.com", "Dummy@12");
 			}
 		};
+		toEmail="prajapat.himanshu@gmail.com";
 		Session session=Session.getInstance(props, auth);
 		try
 	    {
@@ -34,7 +36,6 @@ public class EmailUtil {
 	      msg.setFrom(new InternetAddress("no_reply@gmail.com", "NoReply-JD"));
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
 	      msg.setSubject(subject);
-	      //body="<button href="+body+">"+"Click Here"+"</button>";
 	      msg.setContent(body, "text/html");
 	      System.out.println("Message is ready");
     	  Transport.send(msg);  

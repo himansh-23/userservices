@@ -33,22 +33,15 @@ public class UserToken {
     return null;
 	}
 	
-	public static long tokenVerify(String token)
+	public static long tokenVerify(String token)throws Exception
 	{
-		long userid=-1;
-		try {
 			Verification verification=JWT.require(Algorithm.HMAC256(UserToken.TOKEN_SECRET));
 			JWTVerifier jwtverifier=verification.build();
 			DecodedJWT decodedjwt=jwtverifier.verify(token);
 			Claim claim=decodedjwt.getClaim("ID");
-			userid=claim.asLong();	
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return userid;
-		
+			long userid=claim.asLong();	
+			System.out.println(userid);
+			return userid;
 	}
 
 }

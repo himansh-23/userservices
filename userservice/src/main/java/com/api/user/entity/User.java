@@ -9,13 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.lang.NonNull;
 
 	@Entity
 	@Table(name="user_details")
@@ -43,6 +38,17 @@ import org.springframework.lang.NonNull;
 				message="Password Should Be like 1 UpperCase 1 Lower Case 1 Special Symbol")*/
 		private String password;
 		
+		private boolean isverification;
+		
+		public boolean isIsverification() 
+		{
+			return isverification;
+		}
+
+		public void setIsverification(boolean isverification) {
+			this.isverification = isverification;
+		}
+
 		public User() 
 		{
 			

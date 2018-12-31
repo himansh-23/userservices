@@ -1,10 +1,8 @@
 package com.api.user.services;
 
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +19,6 @@ public class UserServicesImpl implements UserServices {
 	@Autowired
 	private PasswordEncoder passwordencoder;
 	
-	@Value("${mail.properties.subject}")
-	private String subject;
-	@Value("${mail.properties.body}")
-	private String body;
-	
-	@Autowired
-	private MailServices mailservices;
-	
 	@Override
 	public User register(User user) {
 		
@@ -38,12 +28,11 @@ public class UserServicesImpl implements UserServices {
 		{
 			return null;
 		}
-		mailservices.mailSend(user.getEmail(),subject,body);
 		return userrepositoty.save(user);
 	}
 	
-	public String login(LoginUser loginuser) throws Exception
-	{
+	public String login(LoginUser loginuser) throws Exception{
+		
 		return userrepositoty.findByEmail(loginuser.getEmail())
 							 .map(fromDBUser-> this.validUser(fromDBUser, loginuser.getPassword()))
 							 .orElseThrow(()-> new Exception("Not valid User"));
@@ -53,7 +42,7 @@ public class UserServicesImpl implements UserServices {
 		boolean isValid =passwordencoder.matches(password, fromDBUser.getPassword());
 		
 		String  token = null;
-		if(isValid) { 
+		if(isValid){ 
 			token=UserToken.generateToken(fromDBUser.getId());
 		}
 		return  token;

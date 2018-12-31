@@ -1,5 +1,6 @@
 package com.api.user.entity;
 
+
 public class LoginUser {
 	String Email;
 	String Password;

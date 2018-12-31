@@ -1,13 +1,12 @@
 package com.api.user.controller;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,17 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.user.entity.LoginUser;
 import com.api.user.entity.User;
+import com.api.user.repository.UserRepository;
 import com.api.user.response.FeildErrorResponse;
 import com.api.user.response.Response;
-import com.api.user.services.MailServices;
+import com.api.user.services.PasswordServices;
 import com.api.user.services.UserServices;
+import com.api.user.utils.EmailUtil;
 import com.api.user.utils.UserToken;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Verification;
 
 @RestController
 @RequestMapping("/api/user")
@@ -34,9 +29,12 @@ public class UserController {
 
 	@Autowired
 	private UserServices userservices;
-	@Autowired
-	MailServices mailservices;
 	
+	@Autowired
+	private UserRepository userrepositoty;
+	
+	/*@Autowired
+	private PasswordServices passwordservices;*/
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody User user, BindingResult bindingResult)
 	{
@@ -58,11 +56,9 @@ public class UserController {
 		}
 		response = new Response();
 		response.setStatusCode(100);
-		response.setStatusMessage("User Register Sucessfully with id: "+user.getId());
-		
+		response.setStatusMessage("User Register Sucessfully with id: "+user.getId()+"Please Verify Your EmailId");
 		String registertoken=UserToken.generateToken(user.getId());
-		mailservices.mailSend("prajapat.himanshu@gmail.com", "Successfully Registered", "Click On Below link To Verify your Email Address\n"+"https://localhost:8080/api/user/verifyemail?verify"+registertoken);
-		
+		EmailUtil.sendEmail("prajapat.himanshu@gmail.com", "Successfully Registered", "Click On Below link To Verify your Email Address\n"+"http://localhost:8080/api/user/verifyemail?token="+registertoken);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	
@@ -84,26 +80,25 @@ public class UserController {
 		return new ResponseEntity<Response>(response, HttpStatus.FOUND); 
 	}
 	
-	@PostMapping("/verifyemail")
-	public ResponseEntity<Response> verifyEmail(@RequestParam String verifyemail )
+	@GetMapping("/verifyemail")
+	public ResponseEntity<?> verifyEmail(@RequestParam String token)
 	{
-		try {
-				Verification verification=JWT.require(Algorithm.HMAC256(UserToken.TOKEN_SECRET));
-				JWTVerifier jwtverifier=verification.build();
-				DecodedJWT decodedjwt=jwtverifier.verify(verifyemail);
-				Claim claim=decodedjwt.getClaim("ID");
-				int userid=claim.asInt();
-				
-			}
-		catch(Exception e)
+		Response response=new Response();;
+		long userid=UserToken.tokenVerify(token);
+		if(userid>0)
 		{
-			e.printStackTrace();
+		User user=userrepositoty.findById(userid).get();
+		user.setIsverification(true);
+		userrepositoty.save(user);
+		System.out.println("You Are Verified");	
+		response.setStatusCode(200);
+		response.setStatusMessage("Email Verified");
 		}
-		
-		
-		return null;	
+		else
+		{
+			response.setStatusCode(669);
+			response.setStatusMessage("Email Not Verified");
+		}
+		return new ResponseEntity<Response>(response,HttpStatus.CONTINUE);
 	}
-	
-	//create method for jwt token verification agter register
-	
 }

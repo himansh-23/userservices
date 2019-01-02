@@ -39,11 +39,11 @@ public class PasswordController {
 	{
 			Response response;
 			User user=passwordservices.forgotPassword(email);
+			EmailUtil.sendEmail(email, "Password Reset", this.getBody(request, user,"resetpassword"));
 			response=new Response();
 			response.setStatusCode(356);
 			response.setStatusMessage("Reset-Mail Send To Your Eamil Address");
-			String registertoken=UserToken.generateToken(user.getId());
-			EmailUtil.sendEmail(email, "Password Reset", this.getBody(request, user,"resetpassword"));
+//			String registertoken=UserToken.generateToken(user.getId());
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	/**

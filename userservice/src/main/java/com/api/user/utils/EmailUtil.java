@@ -11,9 +11,11 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.api.user.exception.UserException;
+
 public class EmailUtil {
 	
-	public static void sendEmail(String toEmail, String subject, String body){
+	public static void sendEmail(String toEmail, String subject, String body) throws UserException{
 		
 		Properties props = new Properties(); 
 		props.put("mail.smtp.auth", "true"); //enable authentication
@@ -43,7 +45,7 @@ public class EmailUtil {
 	    }
 	    catch (MessagingException | UnsupportedEncodingException e) {
 	      e.printStackTrace();
-	      System.exit(1);
+	      throw new UserException(100, e.getMessage(), e);
 	    }
 	}
 	

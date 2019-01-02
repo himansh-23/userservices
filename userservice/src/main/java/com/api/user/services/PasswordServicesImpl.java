@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.api.user.entity.User;
+import com.api.user.exception.UserException;
 import com.api.user.repository.UserRepository;
 import com.api.user.utils.UserToken;
 
@@ -15,7 +16,7 @@ public class PasswordServicesImpl implements PasswordServices {
 	private UserRepository userrepositoty;
 	
 	@Override
-	public User forgotPassword(String email) throws Exception
+	public User forgotPassword(String email) throws UserException
 	{
 		Optional<User> useravailable=userrepositoty.findByEmail(email);
 		
@@ -25,7 +26,7 @@ public class PasswordServicesImpl implements PasswordServices {
 		}
 		else
 		{
-			throw new Exception("Email Address not Found");
+			throw new UserException(100,"Email Address not Found");
 		}
 	}
 	

@@ -2,6 +2,7 @@ package com.api.user.services;
 
 import com.api.user.entity.LoginUser;
 import com.api.user.entity.User;
+import com.api.user.exception.UserException;
 
 public interface UserServices {
 	/**
@@ -10,7 +11,7 @@ public interface UserServices {
 	 * @return
 	 * @throws Exception
 	 */
-	public User register(User user) throws Exception;
+	public User register(User user) throws UserException;
 	/**
 	 * 
 	 * @param loginuser

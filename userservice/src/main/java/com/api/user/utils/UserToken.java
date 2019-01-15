@@ -10,7 +10,7 @@ import com.auth0.jwt.interfaces.Verification;
 
 public class UserToken {
 	
-	public static String TOKEN_SECRET="gh2we43jue";
+	private static String TOKEN_SECRET="gh2we43jue";
 	public static String generateToken(long id) throws UserException
 	{
 		try {

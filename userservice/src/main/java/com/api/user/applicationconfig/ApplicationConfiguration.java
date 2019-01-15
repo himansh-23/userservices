@@ -1,10 +1,6 @@
 package com.api.user.applicationconfig;
 
-import java.util.Properties;
-
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +17,11 @@ public class ApplicationConfiguration {
 	public PasswordEncoder getPasswordEncoder()
 	{
 		return new BCryptPasswordEncoder();
+	}
+	@Bean
+	public ModelMapper getModelMapper()
+	{
+		return new ModelMapper();
 	}
 	
 /*	@Bean

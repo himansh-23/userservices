@@ -1,6 +1,7 @@
 package com.api.user.services;
 
-import com.api.user.entity.LoginUser;
+import com.api.user.dto.LoginDTO;
+import com.api.user.dto.UserDTO;
 import com.api.user.entity.User;
 import com.api.user.exception.UserException;
 
@@ -11,14 +12,14 @@ public interface UserServices {
 	 * @return
 	 * @throws Exception
 	 */
-	public User register(User user) throws UserException;
+	public User register(UserDTO userDTO) throws UserException;
 	/**
 	 * 
 	 * @param loginuser
 	 * @return
 	 * @throws Exception
 	 */
-	public String login(LoginUser loginuser) throws Exception;
+	public String login(LoginDTO loginuser) throws Exception;
 	/**
 	 * 
 	 * @param token

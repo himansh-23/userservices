@@ -6,6 +6,7 @@ public class UserException extends Exception {
 	String msg;
 	public UserException()
 	{
+		
 	}
 	public UserException(String errormessage) {
 		super(errormessage);

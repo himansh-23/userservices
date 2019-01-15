@@ -23,11 +23,11 @@ import javax.validation.constraints.Pattern;
 		private Long id;
 		
 		@Column(name="user_name")
-		@NotNull(message="Can not be null")
+		
 		private String name;
 		
 		//@UniqueElements
-		@Email(regexp =  "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.(?:[A-Z]{2,}|com|org))+$",message="Not valid")
+		
 		private String email;
 		
 		@Pattern(regexp = "[0-9]{10}", message = "Number Should Only Be Digit And 10 digit only")

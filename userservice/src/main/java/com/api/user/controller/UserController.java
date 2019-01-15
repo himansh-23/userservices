@@ -4,33 +4,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.api.user.entity.LoginUser;
+import com.api.user.dto.LoginDTO;
+import com.api.user.dto.UserDTO;
 import com.api.user.entity.User;
 import com.api.user.exception.UserException;
-import com.api.user.response.FeildErrorResponse;
 import com.api.user.response.Response;
 import com.api.user.services.UserServices;
 import com.api.user.utils.EmailUtil;
 import com.api.user.utils.UserToken;
 
-import ch.qos.logback.classic.Logger;
-
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins= {"http://localhost:4200"},exposedHeaders= {"jwtTokenxxx"})
 public class UserController {
 
+	static Logger logger=LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private UserServices userServices;
 	/**
@@ -40,16 +42,18 @@ public class UserController {
 	 * @throws Exception 
 	 */
 	@PostMapping("/register")
-	public ResponseEntity<Response> register(@Valid @RequestBody User user, BindingResult bindingResult, HttpServletRequest request) throws UserException
+	public ResponseEntity<Response> register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult, HttpServletRequest request) throws UserException
 	{
+        logger.trace("User Registration");
 		Response response;
 		if(bindingResult.hasErrors()) {
 		/*	response = new FeildErrorResponse(bindingResult.getFieldErrors());
 			response.setStatusCode(-100);
 			response.setStatusMessage("invalid Data");*/
+			logger.error("Error in Binding The User Details");
 			throw new UserException(100, "Data Not Matching Eligiable Criteria");
 		}
-		user =userServices.register(user);
+		User user =userServices.register(userDTO);
 //		EmailUtil.sendEmail("prajapat.himanshu@gmail.com", "Successfully Registered", "Click On Below link To Verify your Email Address\n"+"http://localhost:8080/api/user/verifyemail?token="+registertoken);
 		EmailUtil.sendEmail(user.getEmail(),"Successful", getBody(request, user));
 		
@@ -66,22 +70,27 @@ public class UserController {
 	 * @throws Exception
 	 */
 	@PostMapping("/login")
-	public ResponseEntity<Response> login( @RequestBody LoginUser loginuser, BindingResult bindingResult,HttpServletRequest h) throws UserException
+	public ResponseEntity<Response> login( @RequestBody LoginDTO loginuser, BindingResult bindingResult,HttpServletResponse h) throws UserException
 	{	
+	//	System.out.println(loginuser);
+		logger.info("Login");
 		Response response;
 		String token;
 		try {
 		 token =userServices.login(loginuser);
-		}catch(Exception e)
-		{
-			throw new UserException(100,"Login Failed");
 		}
+		catch(Exception e)
+		{
+			throw new UserException(100,e.getMessage());
+		}
+
 		response = new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Sucessfully logged in");
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("jwtToken", token);
-		return new ResponseEntity<>(response, headers, HttpStatus.FOUND); 
+	//	HttpH
+		h.addHeader("jwtTokenxxx", token);
+		
+		return new ResponseEntity<>(response,HttpStatus.OK); 
 	}
 	/**
 	 * 
@@ -90,11 +99,16 @@ public class UserController {
 	 * @throws Exception
 	 */
 	@GetMapping("/verifyemail/{token}")
-	public void verifyEmail(@PathVariable String token, HttpServletResponse response) throws UserException {
-		
+	public ResponseEntity<Response> verifyEmail(@PathVariable String token, HttpServletResponse response) throws UserException {
+		logger.info("User Verify");
+		Response response1;
 		try{
 			userServices.userVerify(token);
-		response.sendRedirect("https://www.google.com");
+			response1 = new Response();
+			response1.setStatusCode(200);
+			response1.setStatusMessage("Sucessfully logged in");
+			return new ResponseEntity<>(response1, HttpStatus.OK);
+	//	response.sendRedirect("http://localhost:4200/login");
 		}
 		catch(Exception exception)
 		{
@@ -110,6 +124,6 @@ public class UserController {
 	 */
 	private String getBody(HttpServletRequest req, User user)throws UserException {
 //		user=userServices.register(user);
-		return (req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()+"api/user/verifyemail"+UserToken.generateToken(user.getId()));
+		return ("http://localhost:4200/verify/"+UserToken.generateToken(user.getId()));
 	}
 }

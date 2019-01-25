@@ -64,13 +64,12 @@ public class PasswordController {
 	public ResponseEntity<?> resetPassword(@PathVariable("token") String token,HttpServletRequest request) throws Exception
 	{	
 		logger.info("password reset");
-
 			User user=passwordservices.passwordReset(token);
-			EmailUtil.sendEmail(user.getEmail(), "ChangePassword", this.getBody(request, user,"reset"));
+			EmailUtil.sendEmail(user.getEmail(), "ChangePassword", this.getBody(request, user,"resetpage"));
 			Response response=new Response();
 			response.setStatusCode(200);
 			response.setStatusMessage("Redirect To New Password Set Page");	
-		return new ResponseEntity<Response>(response, HttpStatus.OK);
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	/**
 	 * Redirect To Password Reset Page

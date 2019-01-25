@@ -1,0 +1,19 @@
+#server:
+#  port: 8082
+#spring:
+#  datasource:
+#    data-password: 
+#    data-username: 
+#    driver-class-name: 
+#    url: 
+#  profiles:
+#    active:
+#    - dev
+#    
+#---
+#spring:
+#  profiles:
+#    active:
+#    - production
+#server:
+#  port: 8083

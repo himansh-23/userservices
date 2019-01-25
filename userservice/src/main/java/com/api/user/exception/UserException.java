@@ -1,13 +1,18 @@
 package com.api.user.exception;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class UserException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	int errorCode;
 	String msg;
-	public UserException()
-	{
-		
-	}
+	
 	public UserException(String errormessage) {
 		super(errormessage);
 	}

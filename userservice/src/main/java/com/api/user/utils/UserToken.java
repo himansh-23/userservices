@@ -26,7 +26,7 @@ public class UserToken {
 		}
 	}
 	
-	public static long tokenVerify(String token)throws Exception	
+	public static long tokenVerify(String token)throws UserException	
 	{
 		long userid;
 		try {
@@ -35,7 +35,7 @@ public class UserToken {
 			DecodedJWT decodedjwt=jwtverifier.verify(token);
 			Claim claim=decodedjwt.getClaim("ID");
 			userid=claim.asLong();	
-			System.out.println(userid);
+		//	System.out.println(userid);
 		}
 		catch(Exception exception)
 		{

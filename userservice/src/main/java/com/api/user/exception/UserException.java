@@ -25,6 +25,7 @@ public class UserException extends Exception {
 	{
 		super(msg, throwable);
 		this.errorCode=errorCode;
+		this.msg=msg;
 	}
 	public int getErrorCode() {
 		return errorCode;

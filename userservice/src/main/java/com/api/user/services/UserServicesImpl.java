@@ -64,7 +64,8 @@ public class UserServicesImpl implements UserServices {
 	}
 	private String validUser(User fromDBUser, String password) throws UserException{
 		boolean isValid =passwordencoder.matches(password, fromDBUser.getPassword());
-		if(isValid){ 
+		if(isValid)
+		{ 
 			return UserToken.generateToken(fromDBUser.getId());
 		}
 		throw new UserException(100,"Not valid User");
@@ -85,4 +86,15 @@ public class UserServicesImpl implements UserServices {
 		user.setIsverification(true);
 		return userRepositoty.save(user);
 	}
+	
+	public Long collabUserId(String token,String email) throws UserException
+	{
+		UserToken.tokenVerify(token);
+	return userRepositoty.findByEmail(email).map(x -> 
+	{
+		return (Long)x.getId();
+	}).orElseThrow(UserException::new);
+	}
+	
+	
 }

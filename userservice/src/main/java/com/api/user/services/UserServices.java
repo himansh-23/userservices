@@ -26,5 +26,7 @@ public interface UserServices {
 	 * @throws Exception
 	 */
 	public void userVerify(String token) throws Exception;
+	
+	public Long collabUserId(String token,String email) throws UserException;
 	 
 }

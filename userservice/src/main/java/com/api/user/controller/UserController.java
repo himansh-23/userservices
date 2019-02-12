@@ -1,5 +1,7 @@
 package com.api.user.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -36,7 +38,7 @@ public class UserController {
 	/**
 	 * @param user
 	 * @param bindingResult
-	 * @return
+	 * @return response
 	 * @throws Exception 
 	 */
 	@PostMapping("/register")
@@ -87,8 +89,7 @@ public class UserController {
 		response.setStatusMessage("Sucessfully logged in");
 	//	HttpH
 		h.addHeader("jwtTokenxxx", token);
-		
-		return new ResponseEntity<>(response,HttpStatus.OK); 
+		return new ResponseEntity<Response>(response,HttpStatus.OK); 
 	}
 	/**
 	 * 
@@ -97,7 +98,7 @@ public class UserController {
 	 * @throws Exception
 	 */
 	@GetMapping("/verifyemail/{token}")
-	public ResponseEntity<Response> verifyEmail(@PathVariable String token, HttpServletResponse response) throws UserException {
+	public ResponseEntity<Response> verifyEmail(@PathVariable String token) throws UserException {
 		logger.info("User Verify");
 		Response response1;
 		try{
@@ -106,7 +107,6 @@ public class UserController {
 			response1.setStatusCode(200);
 			response1.setStatusMessage("Sucessfully logged in");
 			return new ResponseEntity<>(response1, HttpStatus.OK);
-	//	response.sendRedirect("http://localhost:4200/login");
 		}
 		catch(Exception exception)
 		{
@@ -123,5 +123,11 @@ public class UserController {
 	private String getBody(HttpServletRequest req, User user)throws UserException {
 //		user=userServices.register(user);
 		return ("http://localhost:4200/verify/"+UserToken.generateToken(user.getId()));
+	}
+	
+	public ResponseEntity<Long> getUsers(String token,String email) throws UserException
+	{	
+		Long id=userServices.collabUserId(token, email);
+		return new ResponseEntity<Long>(id,HttpStatus.OK);
 	}
 }

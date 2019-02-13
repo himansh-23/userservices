@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
@@ -125,8 +127,9 @@ public class UserController {
 		return ("http://localhost:4200/verify/"+UserToken.generateToken(user.getId()));
 	}
 	
-	public ResponseEntity<Long> getUsers(String token,String email) throws UserException
-	{	
+	@GetMapping("/personid")
+	public ResponseEntity<Long> getUser(@RequestHeader("token") String token,@RequestParam String email) throws UserException
+	{	System.out.println(email);
 		Long id=userServices.collabUserId(token, email);
 		return new ResponseEntity<Long>(id,HttpStatus.OK);
 	}

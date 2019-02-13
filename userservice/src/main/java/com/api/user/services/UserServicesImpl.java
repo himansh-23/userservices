@@ -87,8 +87,10 @@ public class UserServicesImpl implements UserServices {
 		return userRepositoty.save(user);
 	}
 	
+	
 	public Long collabUserId(String token,String email) throws UserException
 	{
+		System.out.println(email);
 		UserToken.tokenVerify(token);
 	return userRepositoty.findByEmail(email).map(x -> 
 	{

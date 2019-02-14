@@ -37,6 +37,8 @@ import lombok.ToString;
 		@Pattern(regexp = "[0-9]{10}", message = "Number Should Only Be Digit And 10 digit only")
 		private String mobileNumber;
 		
+	//	private String profilePicture; 
+		
 		//^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])
 	/*	@Pattern(regexp = "((?=.*\\d)(?=.*[a-z]).{6,20})", 
 				message="Password Should Be like 1 UpperCase 1 Lower Case 1 Special Symbol")*/

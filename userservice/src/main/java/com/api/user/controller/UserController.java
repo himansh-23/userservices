@@ -1,7 +1,5 @@
 package com.api.user.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -129,7 +127,8 @@ public class UserController {
 	
 	@GetMapping("/personid")
 	public ResponseEntity<Long> getUser(@RequestHeader("token") String token,@RequestParam String email) throws UserException
-	{	System.out.println(email);
+	{
+		//System.out.println(token);
 		Long id=userServices.collabUserId(token, email);
 		return new ResponseEntity<Long>(id,HttpStatus.OK);
 	}

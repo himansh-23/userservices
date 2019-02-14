@@ -95,7 +95,7 @@ public class UserServicesImpl implements UserServices {
 	return userRepositoty.findByEmail(email).map(x -> 
 	{
 		return (Long)x.getId();
-	}).orElseThrow(UserException::new);
+	}).orElse(-1L); //.orElseThrow(UserException::new);
 	}
 	
 	

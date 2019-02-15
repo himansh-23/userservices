@@ -1,5 +1,7 @@
 package com.api.user.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
 import com.api.user.entity.User;
@@ -125,6 +129,13 @@ public class UserController {
 		return ("http://localhost:4200/verify/"+UserToken.generateToken(user.getId()));
 	}
 	
+	/**
+	 * 
+	 * @param token
+	 * @param email
+	 * @return
+	 * @throws UserException
+	 */
 	@GetMapping("/personid")
 	public ResponseEntity<Long> getUser(@RequestHeader("token") String token,@RequestParam String email) throws UserException
 	{
@@ -132,4 +143,12 @@ public class UserController {
 		Long id=userServices.collabUserId(token, email);
 		return new ResponseEntity<Long>(id,HttpStatus.OK);
 	}
+	
+	@PostMapping("/collabuserdetails")
+	public ResponseEntity<List<CollabUserDetails>> getDetails(@RequestBody List<Long> ids) throws UserException
+	{
+		return new ResponseEntity<List<CollabUserDetails>> (userServices.userEmails(ids),HttpStatus.OK);
+	}
+	
+	
 }

@@ -1,11 +1,16 @@
 package com.api.user.services;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
 import com.api.user.entity.User;
@@ -83,6 +88,7 @@ public class UserServicesImpl implements UserServices {
 		userRepositoty.findById(userId).map(this::verify).orElseThrow(()-> new UserException(100,"Not valid User"));
 	}
 	private User verify(User user) {
+		
 		user.setIsverification(true);
 		return userRepositoty.save(user);
 	}
@@ -98,5 +104,12 @@ public class UserServicesImpl implements UserServices {
 	}).orElse(-1L); //.orElseThrow(UserException::new);
 	}
 	
+	@Override
+	public List<CollabUserDetails> userEmails(List<Long> ids)
+	{	
+		List<CollabUserDetails> list=new ArrayList<>();
+		userRepositoty.findEmailofUsers(ids).get().forEach( x -> list.add(new CollabUserDetails(x)));
+		return list;
+	}
 	
 }

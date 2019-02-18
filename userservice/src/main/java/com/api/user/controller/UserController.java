@@ -1,7 +1,11 @@
 package com.api.user.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -19,8 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
@@ -34,9 +39,12 @@ import com.api.user.utils.UserToken;
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin(origins= {"http://localhost:4200"},exposedHeaders= {"jwtTokenxxx"})
-public class UserController {
+public class UserController { 
 
 	static Logger logger=LoggerFactory.getLogger(UserController.class);
+	
+	private final Path rootLocation =Paths.get("/home/administrator/Desktop");
+
 	@Autowired
 	private UserServices userServices;
 	/**
@@ -148,6 +156,30 @@ public class UserController {
 	public ResponseEntity<List<CollabUserDetails>> getDetails(@RequestBody List<Long> ids) throws UserException
 	{
 		return new ResponseEntity<List<CollabUserDetails>> (userServices.userEmails(ids),HttpStatus.OK);
+	}
+	
+	@PostMapping(value="/imageupload")
+	public ResponseEntity<Response> profileImageSave(@RequestParam("file") MultipartFile file) throws UserException //@RequestHeader("token") String token,
+	{
+		System.out.println("hello");
+		System.out.println(file.getOriginalFilename());
+		try {
+			 File convFile = new File(file.getOriginalFilename());
+			    convFile.createNewFile(); 
+			    FileOutputStream fos = new FileOutputStream(convFile); 
+			    fos.write(file.getBytes());
+			    fos.close(); 
+			
+		} catch (Exception e) 
+		{	
+		e.printStackTrace();
+		}
+		Response response = new Response();
+		response.setStatusCode(166);
+		response.setStatusMessage("Image Uploaded");
+		return new ResponseEntity<Response>(response,HttpStatus.OK);
+		
+		
 	}
 	
 	

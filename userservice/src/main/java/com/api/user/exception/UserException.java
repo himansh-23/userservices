@@ -20,6 +20,7 @@ public class UserException extends Exception {
 	{
 		this(msg);
 		this.errorCode=errorCode;
+		this.msg=msg;
 	}
 	public UserException(int errorCode, String msg, Throwable throwable)
 	{

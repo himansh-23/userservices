@@ -112,4 +112,25 @@ public class UserServicesImpl implements UserServices {
 		return list;
 	}
 	
+	public User getUser(long id)
+	{
+	return userRepositoty.findById(id).get();
+	}
+	
+	public  void setProfileImage(String token,String fileName) throws UserException
+	 {
+		 long id=UserToken.tokenVerify(token);
+		 User user=userRepositoty.findById(id).get();
+		 user.setProfileImage(fileName);
+		 userRepositoty.save(user);
+	 }
+	
+	 public String getProfileImage(long id)
+	 {
+		 User user=userRepositoty.findById(id).get();
+		 return user.getProfileImage(); 
+	 }
+
+
+	
 }

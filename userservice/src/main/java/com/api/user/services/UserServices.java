@@ -33,5 +33,10 @@ public interface UserServices {
 	 Long collabUserId(String token,String email) throws UserException;
 	
 	 List<CollabUserDetails> userEmails(List<Long> ids);
+	 public User getUser(long id);
+	 
+	 void setProfileImage(String token,String fileName) throws UserException;
+	 
+	 String getProfileImage(long id);
 	 
 }

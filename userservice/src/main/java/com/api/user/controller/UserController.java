@@ -1,17 +1,21 @@
 package com.api.user.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.api.user.dto.CollabUserDetails;
@@ -43,7 +46,7 @@ public class UserController {
 
 	static Logger logger=LoggerFactory.getLogger(UserController.class);
 	
-	private final Path rootLocation =Paths.get("/home/administrator/Desktop");
+	private final Path rootLocation =Paths.get("/home/administrator/Desktop/upload-files");
 
 	@Autowired
 	private UserServices userServices;
@@ -99,7 +102,7 @@ public class UserController {
 		response = new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Sucessfully logged in");
-	//	HttpH
+	
 		h.addHeader("jwtTokenxxx", token);
 		return new ResponseEntity<Response>(response,HttpStatus.OK); 
 	}
@@ -133,7 +136,7 @@ public class UserController {
 	 * @throws Exception
 	 */
 	private String getBody(HttpServletRequest req, User user)throws UserException {
-//		user=userServices.register(user);
+		
 		return ("http://localhost:4200/verify/"+UserToken.generateToken(user.getId()));
 	}
 	
@@ -159,28 +162,44 @@ public class UserController {
 	}
 	
 	@PostMapping(value="/imageupload")
-	public ResponseEntity<Response> profileImageSave(@RequestParam("file") MultipartFile file) throws UserException //@RequestHeader("token") String token,
+	public ResponseEntity<Response> profileImageSave(@RequestHeader("token") String token,@RequestParam("file") MultipartFile file) throws UserException //@RequestHeader("token") String token,
 	{
-		System.out.println("hello");
-		System.out.println(file.getOriginalFilename());
+		UUID uuid = UUID.randomUUID();
+		String uuidString=uuid.toString();
 		try {
-			 File convFile = new File(file.getOriginalFilename());
-			    convFile.createNewFile(); 
-			    FileOutputStream fos = new FileOutputStream(convFile); 
-			    fos.write(file.getBytes());
-			    fos.close(); 
-			
-		} catch (Exception e) 
+			Files.copy(file.getInputStream(), this.rootLocation.resolve(uuidString),StandardCopyOption.REPLACE_EXISTING);
+			userServices.setProfileImage(token,uuid.toString());
+		}
+		catch (Exception e) 
 		{	
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 		Response response = new Response();
 		response.setStatusCode(166);
 		response.setStatusMessage("Image Uploaded");
 		return new ResponseEntity<Response>(response,HttpStatus.OK);
-		
-		
 	}
 	
-	
+	@GetMapping("/imageget/{token}")
+	public Resource getProfilePic(@PathVariable String token) throws UserException
+	{
+		long id=UserToken.tokenVerify(token);
+		System.out.println(id);
+		String fileName=userServices.getProfileImage(id);
+		Path file = rootLocation.resolve(fileName);
+		try {
+		Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable()) 
+			{
+				return resource;
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
 }

@@ -46,9 +46,10 @@ import lombok.ToString;
 		
 		private boolean isverification;
 		
+		private String profileImage;
 		public User() 
 		{
-			
+								
 		}
 
 	}

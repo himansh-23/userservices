@@ -16,5 +16,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	@Query(value="select email from user_details where id IN (:id)",nativeQuery=true)
 	Optional<List<String>> findEmailofUsers(@Param("id")List<Long> ids);
 	
+	
 }
 

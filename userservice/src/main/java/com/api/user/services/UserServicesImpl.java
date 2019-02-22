@@ -131,6 +131,12 @@ public class UserServicesImpl implements UserServices {
 		 return user.getProfileImage(); 
 	 }
 
+	@Override
+	public Long getUserId(String email) {
+		
+		return userRepositoty.findByEmail(email).get().getId();
+	}
+
 
 	
 }

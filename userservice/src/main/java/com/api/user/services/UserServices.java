@@ -39,4 +39,6 @@ public interface UserServices {
 	 
 	 String getProfileImage(long id);
 	 
+	 Long getUserId(String email);
+	 
 }

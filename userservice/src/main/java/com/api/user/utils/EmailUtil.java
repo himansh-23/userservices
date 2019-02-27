@@ -13,6 +13,8 @@ import javax.mail.internet.MimeMessage;
 
 import com.api.user.exception.UserException;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 public class EmailUtil {
 	
 	public static void sendEmail(String toEmail, String subject, String body) throws UserException{
@@ -39,12 +41,12 @@ public class EmailUtil {
 	      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
 	      msg.setSubject(subject);
 	      msg.setContent(body, "text/html");
-	      System.out.println("Message is ready");
+	      log.info("Message is ready");
     	  Transport.send(msg);  
-	      System.out.println("EMail Sent Successfully!!");
+    	  log.info("EMail Sent Successfully!!");
 	    }
 	    catch (MessagingException | UnsupportedEncodingException e) {
-	      e.printStackTrace();
+	      log.error(e.getMessage(), e);
 	      throw new UserException(100, e.getMessage(), e);
 	    }
 	}

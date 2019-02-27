@@ -2,22 +2,21 @@ package com.api.user.services;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
+import com.api.user.dto.UserInfo;
 import com.api.user.entity.User;
 import com.api.user.exception.UserException;
 import com.api.user.repository.UserRepository;
 import com.api.user.utils.UserToken;
 import org.modelmapper.ModelMapper;
+
 @Service
 public class UserServicesImpl implements UserServices {
 
@@ -114,6 +113,7 @@ public class UserServicesImpl implements UserServices {
 	
 	public User getUser(long id)
 	{
+		
 	return userRepositoty.findById(id).get();
 	}
 	
@@ -135,6 +135,16 @@ public class UserServicesImpl implements UserServices {
 	public Long getUserId(String email) {
 		
 		return userRepositoty.findByEmail(email).get().getId();
+	}
+
+	@Override
+	public UserInfo getUserInfo(String token)throws UserException {
+		Long id=UserToken.tokenVerify(token);
+		User user= userRepositoty.findById(id).get();
+		UserInfo userinfo=(UserInfo) modelMapper.map(user, UserInfo.class);
+		
+		return userinfo;
+		
 	}
 
 

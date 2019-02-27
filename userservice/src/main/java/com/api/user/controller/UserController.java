@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
+import com.api.user.dto.UserInfo;
 import com.api.user.entity.User;
 import com.api.user.exception.UserException;
 import com.api.user.response.Response;
@@ -202,4 +203,10 @@ public class UserController {
 	public ResponseEntity<Long> getUserId(@RequestParam String email) {
 		return new ResponseEntity<Long>(userServices.getUserId(email), HttpStatus.OK);
 	}
+	
+	@GetMapping("/getUserDetails")
+	public ResponseEntity<UserInfo> getUserInfo(@RequestHeader String token)throws UserException
+	{
+		return new ResponseEntity<UserInfo>(userServices.getUserInfo(token),HttpStatus.OK);
+		}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.api.user.dto.CollabUserDetails;
 import com.api.user.dto.LoginDTO;
 import com.api.user.dto.UserDTO;
+import com.api.user.dto.UserInfo;
 import com.api.user.entity.User;
 import com.api.user.exception.UserException;
 
@@ -40,5 +41,7 @@ public interface UserServices {
 	 String getProfileImage(long id);
 	 
 	 Long getUserId(String email);
+	 
+	 UserInfo getUserInfo(String token)throws UserException;
 	 
 }
